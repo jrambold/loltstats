@@ -8,4 +8,9 @@ urlpatterns = [
 	path('add_member', views.add_member, name='add_member'),
 	path('populate', views.populate, name='populate'),
 	path('best_by_position', views.best_by_position, name='best_by_position'),
+	path('custom_team', views.custom_team, name='custom_team'),
+	path('duo', views.duo, name='duo'),
+	path('trio', views.trio, name='trio'),
+	path('quad', views.quad, name='quad'),
+	path('squad', views.squad, name='squad'),
 ]

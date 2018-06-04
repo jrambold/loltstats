@@ -12,7 +12,6 @@ def headers():
 def index(request):
     return JsonResponse({'Hello': 'World'})
 
-
 #lists all teams
 def list(request):
 	data = serializers.serialize("json", Team.objects.all())
@@ -219,6 +218,161 @@ def best_by_position(request):
 				
 	return JsonResponse(best_group)
 
+def custom_team(request):
+	inHeaders = request.META
+	
+	top = False
+	mid = False
+	jun = False
+	adc = False
+	sup = False
+	
+	if 'HTTP_TOP' in set(inHeaders):
+		top = Player.objects.filter(name=inHeaders['HTTP_TOP'])[0]
+		exists = top
+	
+	if 'HTTP_MID' in set(inHeaders):
+		mid = Player.objects.filter(name=inHeaders['HTTP_MID'])[0]
+		exists = mid
+		
+	if 'HTTP_JUN' in set(inHeaders):
+		jun = Player.objects.filter(name=inHeaders['HTTP_JUN'])[0]
+		exists = jun
+	
+	if 'HTTP_ADC' in set(inHeaders):
+		adc = Player.objects.filter(name=inHeaders['HTTP_ADC'])[0]
+		exists = adc
+	
+	if 'HTTP_SUP' in set(inHeaders):
+		sup = Player.objects.filter(name=inHeaders['HTTP_SUP'])[0]
+		exists = sup
+		
+	games = exists.flexmatch_set.all()
+	if top:
+		games = games.filter(top=top.account_id)
+	if mid:
+		games = games.filter(mid=mid.account_id)
+	if jun:
+		games = games.filter(jun=jun.account_id)
+	if adc:
+		games = games.filter(adc=adc.account_id)
+	if sup:
+		games = games.filter(sup=sup.account_id)
+		
+	total = games.count()
+	wins = games.filter(win=True).count()
+	
+	group = {'percent': percent(wins, total), 'wins': wins, 'losses': (total-wins), 'total': total}
+	
+	return JsonResponse(group)
+
+def duo(request):
+	inHeaders = request.META
+	
+	p1 = Player.objects.filter(name=inHeaders['HTTP_P1'])[0]
+	p2 = Player.objects.filter(name=inHeaders['HTTP_P2'])[0]
+	
+	total = 0
+	wins = 0
+	
+	positions = ['top', 'mid', 'jun', 'adc', 'sup']
+	
+	for pos in positions:
+		total += p1.flexmatch_set.filter(**{pos: p2.account_id}).count()
+		wins += p1.flexmatch_set.filter(**{pos: p2.account_id}).filter(win=True).count()
+	
+	group = {'percent': percent(wins, total), 'wins': wins, 'losses': (total-wins), 'total': total}
+	
+	return JsonResponse(group)
+	
+def trio(request):
+	inHeaders = request.META
+	
+	p1 = Player.objects.filter(name=inHeaders['HTTP_P1'])[0]
+	p2 = Player.objects.filter(name=inHeaders['HTTP_P2'])[0]
+	p3 = Player.objects.filter(name=inHeaders['HTTP_P3'])[0]
+	
+	total = 0
+	wins = 0
+	
+	positions = ['top', 'mid', 'jun', 'adc', 'sup']
+	
+	for pos in positions:
+		total_matches = p1.flexmatch_set.filter(**{pos: p2.account_id})
+		wins_matches = p1.flexmatch_set.filter(**{pos: p2.account_id}).filter(win=True)
+		
+		for pos2 in positions:
+			total += total_matches.filter(**{pos2: p3.account_id}).count()
+			wins += wins_matches.filter(**{pos2: p3.account_id}).count()
+
+	
+	group = {'percent': percent(wins, total), 'wins': wins, 'losses': (total-wins), 'total': total}
+	
+	return JsonResponse(group)
+	
+def quad(request):
+	inHeaders = request.META
+	
+	p1 = Player.objects.filter(name=inHeaders['HTTP_P1'])[0]
+	p2 = Player.objects.filter(name=inHeaders['HTTP_P2'])[0]
+	p3 = Player.objects.filter(name=inHeaders['HTTP_P3'])[0]
+	p4 = Player.objects.filter(name=inHeaders['HTTP_P4'])[0]
+	
+	total = 0
+	wins = 0
+	
+	positions = ['top', 'mid', 'jun', 'adc', 'sup']
+	
+	for pos in positions:
+		total_matches = p1.flexmatch_set.filter(**{pos: p2.account_id})
+		wins_matches = p1.flexmatch_set.filter(**{pos: p2.account_id}).filter(win=True)
+		
+		for pos2 in positions:
+			total2_matches = total_matches.filter(**{pos2: p3.account_id})
+			wins2_matches = wins_matches.filter(**{pos2: p3.account_id})
+			
+			for pos3 in positions:
+				total += total2_matches.filter(**{pos3: p4.account_id}).count()
+				wins += wins2_matches.filter(**{pos3: p4.account_id}).count()
+	
+	group = {'percent': percent(wins, total), 'wins': wins, 'losses': (total-wins), 'total': total}
+	
+	return JsonResponse(group)
+	
+def squad(request):
+	inHeaders = request.META
+	
+	p1 = Player.objects.filter(name=inHeaders['HTTP_P1'])[0]
+	p2 = Player.objects.filter(name=inHeaders['HTTP_P2'])[0]
+	p3 = Player.objects.filter(name=inHeaders['HTTP_P3'])[0]
+	p4 = Player.objects.filter(name=inHeaders['HTTP_P4'])[0]
+	p5 = Player.objects.filter(name=inHeaders['HTTP_P5'])[0]
+	
+	total = 0
+	wins = 0
+	
+	positions = ['top', 'mid', 'jun', 'adc', 'sup']
+	
+	for pos in positions:
+		total_matches = p1.flexmatch_set.filter(**{pos: p2.account_id})
+		wins_matches = p1.flexmatch_set.filter(**{pos: p2.account_id}).filter(win=True)
+		
+		for pos2 in positions:
+			total2_matches = total_matches.filter(**{pos2: p3.account_id})
+			wins2_matches = wins_matches.filter(**{pos2: p3.account_id})
+			
+			for pos3 in positions:
+				total3_matches = total2_matches.filter(**{pos3: p4.account_id})
+				wins3_matches = wins2_matches.filter(**{pos3: p4.account_id})
+			
+				for pos4 in positions:
+					total += total3_matches.filter(**{pos4: p5.account_id}).count()
+					wins += wins3_matches.filter(**{pos4: p5.account_id}).count()
+	
+	group = {'percent': percent(wins, total), 'wins': wins, 'losses': (total-wins), 'total': total}
+	
+	return JsonResponse(group)
+	
 def percent(portion, full):
 	if full == 0:
 		return 0
