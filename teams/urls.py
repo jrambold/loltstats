@@ -13,4 +13,6 @@ urlpatterns = [
 	path('trio', views.trio, name='trio'),
 	path('quad', views.quad, name='quad'),
 	path('squad', views.squad, name='squad'),
+	path('solo_populate', views.solo_populate, name='solo_populate'),
+	path('solo_stats', views.solo_stats, name='solo_stats'),
 ]

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from teams.models import Team, Player, FlexMatch
+from teams.models import Team, Player, FlexMatch, SoloMatch
 from django.core import serializers
 import requests
 import json
@@ -377,3 +377,128 @@ def percent(portion, full):
 	if full == 0:
 		return 0
 	return portion/full*100
+
+def solo_populate(request):
+	inHeaders = request.META
+	player = Player.objects.get(name = inHeaders['HTTP_PLAYER'])
+	count = 0
+	
+	more_matches = True
+	index = 0
+	most_recent = player.solomatch_set.order_by('-timestamp')
+	if len(most_recent) > 0:
+		most_recent = most_recent[0].timestamp
+	else:
+		most_recent = 0
+	
+	while more_matches:
+		r = requests.get(f"https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/{player.account_id}?queue=420&season=11&beginIndex={index}", headers=headers()).json()
+		if len(r['matches']) == 0:
+			more_matches = False
+		for match in r['matches']:
+			
+			gameId = match['gameId']
+			champion = match['champion']
+			season = match['season']
+			timestamp = match['timestamp']
+			role = match['role']
+			lane = match['lane']
+			
+			if timestamp > most_recent:
+				
+				details = requests.get(f"https://na1.api.riotgames.com/lol/match/v3/matches/{gameId}", headers=headers()).json()
+				time.sleep(2)
+				
+				game_version = details['gameVersion']
+				
+				participantID = 0
+				
+				for participant in details['participantIdentities']:
+					if (participant['player']['accountId'] == player.account_id):
+						participantID = participant['participantId']
+					
+				win = details['participants'][participantID-1]['stats']['win']
+				
+				if participantID > 5:
+					i = 5
+				else:
+					i = 0
+				
+				top = 0
+				mid = 0
+				jun = 0
+				adc = 0
+				sup = 0
+				
+				for j in range(5):
+					p_role = details['participants'][j+i]['timeline']['role']
+					p_lane = details['participants'][j+i]['timeline']['lane']
+					if p_role == 'SOLO' and p_lane == 'TOP':
+						top = details['participantIdentities'][j+i]['player']['accountId']
+					elif p_role == 'SOLO' and p_lane == 'MIDDLE':
+						mid = details['participantIdentities'][j+i]['player']['accountId']
+					elif p_role == 'NONE' and p_lane == 'JUNGLE':
+						jun = details['participantIdentities'][j+i]['player']['accountId']
+					elif p_role == 'DUO_CARRY' and p_lane == 'BOTTOM':
+						adc = details['participantIdentities'][j+i]['player']['accountId']
+					elif p_role == 'DUO_SUPPORT' and p_lane == 'BOTTOM':
+						sup = details['participantIdentities'][j+i]['player']['accountId']
+					
+				solo = SoloMatch(player = player,
+								gameId = gameId,
+								champion = champion,
+								season = season,
+								timestamp = timestamp,
+								role = role,
+								lane = lane,
+								game_version = game_version,
+								win = win,
+								top = top,
+								mid = mid,
+								jun = jun,
+								adc = adc,
+								sup = sup)
+				solo.save()
+
+				count += 1
+			else:
+				more_matches = False
+		index += 100
+
+	return JsonResponse({'Games_Created': count})
+	
+def solo_stats(request):
+	inHeaders = request.META
+	player = Player.objects.get(name = inHeaders['HTTP_PLAYER'])
+	
+	total = player.solomatch_set.count()
+	wins = player.solomatch_set.filter(win=True).count()
+	
+	top_wins = player.solomatch_set.filter(top=player.account_id).filter(win=True).count()
+	top_total = player.solomatch_set.filter(top=player.account_id).count()
+	
+	mid_wins = player.solomatch_set.filter(mid=player.account_id).filter(win=True).count()
+	mid_total = player.solomatch_set.filter(mid=player.account_id).count()
+		
+	jun_wins = player.solomatch_set.filter(jun=player.account_id).filter(win=True).count()
+	jun_total = player.solomatch_set.filter(jun=player.account_id).count()
+		
+	adc_wins = player.solomatch_set.filter(adc=player.account_id).filter(win=True).count()
+	adc_total = player.solomatch_set.filter(adc=player.account_id).count()
+		
+	sup_wins = player.solomatch_set.filter(sup=player.account_id).filter(win=True).count()
+	sup_total = player.solomatch_set.filter(sup=player.account_id).count()
+	
+	stats = {'total_games': total,
+			'wins': wins,
+			'losses': (total-wins),
+			'percent': percent(wins, total),
+			'top': {'percent': percent(top_wins, top_total), 'wins': top_wins, 'losses': (top_total-top_wins), 'total': top_total},
+			'mid': {'percent': percent(mid_wins, mid_total), 'wins': mid_wins, 'losses': (mid_total-mid_wins), 'total': mid_total},
+			'jun': {'percent': percent(jun_wins, jun_total), 'wins': jun_wins, 'losses': (jun_total-jun_wins), 'total': jun_total},
+			'adc': {'percent': percent(adc_wins, adc_total), 'wins': adc_wins, 'losses': (adc_total-adc_wins), 'total': adc_total},
+			'sup': {'percent': percent(sup_wins, sup_total), 'wins': sup_wins, 'losses': (sup_total-sup_wins), 'total': sup_total}}
+				
+	return JsonResponse(stats)
+	
+	
