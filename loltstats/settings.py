@@ -82,9 +82,20 @@ WSGI_APPLICATION = 'loltstats.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://bbqdfvwsonahty:5fac620ac7adde5dba1bc15b135f6a3b85c66fe4735b812496d53745c0fb3d9a@ec2-54-235-193-34.compute-1.amazonaws.com:5432/df68mk0ac8edpr'
+        default=os.environ.get('DATABASE_URL')
     )
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'loltstats',
+#         'USER': os.environ.get('DATABASE_USER'),
+#         'PASSWORD': os.environ.get('DATABASE_PW'),
+#         'HOST': '',
+#         'PORT': '',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
