@@ -5,9 +5,10 @@ from django.core import serializers
 import requests
 import json
 import time
+import os
 
 def headers():
-	return { 'X-Riot-Token': 'RGAPI-b0447c72-3b71-4256-9063-fe4fc5ab2479' }
+	return { 'X-Riot-Token': os.environ.get('RIOT_KEY') }
 
 def percent(portion, full):
 	if full == 0:
