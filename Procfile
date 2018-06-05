@@ -1,1 +1,1 @@
-web: gunicorn {{ loltstats }}.wsgi
+web: gunicorn loltstats.wsgi

@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-import dj_database_url
 import django_heroku
+from .base import
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,8 +28,9 @@ SECRET_KEY = 'ywaxj%4g01kvm*iexhrcsw!z9=&+aa+pm#is6)^+g-=w%ekje5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+ENVIRONMENT = 'production'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['']
 
 
 # Application definition
@@ -80,10 +82,9 @@ WSGI_APPLICATION = 'loltstats.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=config(os.environ.get('DATABASE_URL'))
+        default='postgres://bbqdfvwsonahty:5fac620ac7adde5dba1bc15b135f6a3b85c66fe4735b812496d53745c0fb3d9a@ec2-54-235-193-34.compute-1.amazonaws.com:5432/df68mk0ac8edpr'
     )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -121,11 +122,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 STATIC_URL = '/static/'
-# Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
-)
+
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-django_heroku.settings(locals())
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
