@@ -12,7 +12,7 @@ class Player(models.Model):
 	account_id = models.BigIntegerField()
 	name = models.CharField(max_length=200)
 	profile_icon_id = models.IntegerField()
-	revision_date = models.IntegerField()
+	revision_date = models.BigIntegerField()
 	summoner_level = models.IntegerField()
 	team = models.ForeignKey(Team, on_delete=models.CASCADE)
 

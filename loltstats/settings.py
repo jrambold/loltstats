@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 ENVIRONMENT = 'production'
 
-ALLOWED_HOSTS = ['limitless-coast-36409.herokuapp.com']
+ALLOWED_HOSTS = ['limitless-coast-36409.herokuapp.com', 'localhost']
 
 
 # Application definition
@@ -80,22 +80,22 @@ WSGI_APPLICATION = 'loltstats.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-    )
-}
-
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'loltstats',
-#         'USER': os.environ.get('DATABASE_USER'),
-#         'PASSWORD': os.environ.get('DATABASE_PW'),
-#         'HOST': '',
-#         'PORT': '',
-#     }
+#     'default': dj_database_url.config(
+#         default=os.environ.get('DATABASE_URL')
+#     )
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'loltstats',
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PW'),
+        'HOST': '',
+        'PORT': '',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
