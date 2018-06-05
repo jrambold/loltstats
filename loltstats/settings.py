@@ -28,7 +28,7 @@ SECRET_KEY = 'ywaxj%4g01kvm*iexhrcsw!z9=&+aa+pm#is6)^+g-=w%ekje5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [limitless-coast-36409.herokuapp.com]
+ALLOWED_HOSTS = []
 
 
 # Application definition
