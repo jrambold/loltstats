@@ -6,8 +6,7 @@ import requests
 import json
 import time
 import os
-from rq import Queue
-from worker import conn
+import django_rq
 
 def headers():
 	return { 'X-Riot-Token': os.environ.get('RIOT_KEY') }
@@ -113,6 +112,7 @@ def populate_background(teamname):
 				else:
 					more_matches = False
 			index += 100
+	return count
 
 #takes headers team
 def populate(request):
@@ -120,7 +120,7 @@ def populate(request):
 
 	inHeaders = request.META
 
-	q.enqueue(populate_background, inHeaders['HTTP_TEAM'])
+	django_rq.enqueue(populate_background, inHeaders['HTTP_TEAM'])
 
 	return JsonResponse({'Creating_Games': 'Exploding Poros'})
 

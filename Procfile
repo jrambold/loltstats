@@ -1,2 +1,2 @@
 web: gunicorn loltstats.wsgi
-worker: python worker.py
+worker: python loltstats/manage.py rqworker high default low
