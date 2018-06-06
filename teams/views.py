@@ -140,6 +140,9 @@ def add_member(request):
 
 	player.save()
 
+	django_rq.enqueue(populate_background, inHeaders['HTTP_TEAM'])
+	django_rq.enqueue(solo_populate_background, name)
+
 	created = {'riot_id': r['id'],
 			'account_id': r['accountId'],
 			'name': r['name'],
@@ -394,8 +397,15 @@ def squad(request):
 
 def solo_populate(request):
 	inHeaders = request.META
-	player = Player.objects.get(name = inHeaders['HTTP_PLAYER'])
+
+	django_rq.enqueue(solo_populate_background, inHeaders['HTTP_PLAYER'])
+
+	return JsonResponse({'Creating_Games': 'Exploding Poros'})
+
+def solo_populate_background(player_name):
 	count = 0
+
+	player = Player.objects.get(name = player_name)
 
 	more_matches = True
 	index = 0
@@ -478,8 +488,7 @@ def solo_populate(request):
 			else:
 				more_matches = False
 		index += 100
-
-	return JsonResponse({'Games_Created': count})
+	return count
 
 def solo_stats(request):
 	inHeaders = request.META
