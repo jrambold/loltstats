@@ -56,7 +56,7 @@ def populate(request):
 				if timestamp > most_recent:
 
 					details = requests.get(f"https://na1.api.riotgames.com/lol/match/v3/matches/{gameId}", headers=headers()).json()
-					time.sleep(2)
+					time.sleep(12)
 
 					game_version = details['gameVersion']
 
