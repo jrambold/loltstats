@@ -20,23 +20,24 @@ def list(request):
 	r = json.loads(data)
 	return JsonResponse(r, safe=False)
 
-def add_team:
+def add_team(request):
 	inHeaders = request.META
 	name = inHeaders['HTTP_TEAM']
 
 	team = Team(name = name)
-	player.save()
+	team.save()
 
 	created = {'Team': name}
 	return JsonResponse(created)
 
 def delete_team(request):
 	inHeaders = request.META
-	myteam = Team.objects.get(name = inHeaders['HTTP_TEAM'])
+	name = inHeaders['HTTP_TEAM']
+	myteam = Team.objects.get(name = name)
 
 	myteam.delete()
 
-	return JsonResponse({'Deleted_Team': inHeaders['HTTP_TEAM'])
+	return JsonResponse({'Deleted_Team': name})
 
 #add and get team members
 
@@ -80,11 +81,12 @@ def get_team_members(request):
 
 def delete_member(request):
 	inHeaders = request.META
-	myplayer = Player.objects.get(name = inHeaders['HTTP_PLAYER'])
+	name = inHeaders['HTTP_PLAYER']
+	myplayer = Player.objects.get(name = name)
 
 	myplayer.delete()
 
-	return JsonResponse({'Deleted_Team': inHeaders['HTTP_PLAYER'])
+	return JsonResponse({'Deleted_Team': name})
 
 #Team Stats
 
