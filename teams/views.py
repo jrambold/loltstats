@@ -6,6 +6,8 @@ import requests
 import json
 import time
 import os
+from rq import Queue
+from worker import conn
 
 def headers():
 	return { 'X-Riot-Token': os.environ.get('RIOT_KEY') }
@@ -24,10 +26,8 @@ def list(request):
 	r = json.loads(data)
 	return JsonResponse(r, safe=False)
 
-#takes headers team
-def populate(request):
-	inHeaders = request.META
-	myteam = Team.objects.get(name = inHeaders['HTTP_TEAM'])
+def populate_background(teamname):
+	myteam = Team.objects.get(name = teamname)
 	players = myteam.player_set.all()
 
 	count = 0
@@ -56,7 +56,7 @@ def populate(request):
 				if timestamp > most_recent:
 
 					details = requests.get(f"https://na1.api.riotgames.com/lol/match/v3/matches/{gameId}", headers=headers()).json()
-					time.sleep(12)
+					time.sleep(2)
 
 					game_version = details['gameVersion']
 
@@ -114,7 +114,15 @@ def populate(request):
 					more_matches = False
 			index += 100
 
-	return JsonResponse({'Games_Created': count})
+#takes headers team
+def populate(request):
+	q = Queue(connection=conn)
+
+	inHeaders = request.META
+
+	q.enqueue(populate_background, inHeaders['HTTP_TEAM'])
+
+	return JsonResponse({'Creating_Games': 'Exploding Poros'})
 
 #takes headers team and name
 def add_member(request):
