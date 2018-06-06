@@ -99,7 +99,7 @@ def best_by_position(request):
 
 	myteam = Team.objects.get(name = inHeaders['HTTP_TEAM'])
 
-	player = myteam.player_set.all()[1]
+	player = myteam.player_set.all()[0]
 
 	top_total = 0
 	top_wins = 0
