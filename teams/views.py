@@ -81,12 +81,12 @@ def get_team_members(request):
 
 def delete_member(request):
 	inHeaders = request.META
-	name = inHeaders['HTTP_PLAYER']
+	name = inHeaders['HTTP_NAME']
 	myplayer = Player.objects.get(name = name)
 
 	myplayer.delete()
 
-	return JsonResponse({'Deleted_Team': name})
+	return JsonResponse({'Deleted_Player': name})
 
 #Team Stats
 
@@ -220,7 +220,7 @@ def custom_team(request):
 
 def solo_stats(request):
 	inHeaders = request.META
-	player = Player.objects.get(name = inHeaders['HTTP_PLAYER'])
+	player = Player.objects.get(name = inHeaders['HTTP_NAME'])
 
 	total = player.solomatch_set.count()
 	wins = player.solomatch_set.filter(win=True).count()
@@ -254,7 +254,7 @@ def solo_stats(request):
 
 def solo(request):
 	inHeaders = request.META
-	player = Player.objects.get(name = inHeaders['HTTP_PLAYER'])
+	player = Player.objects.get(name = inHeaders['HTTP_NAME'])
 
 	total = player.flexmatch_set.count()
 	wins = player.flexmatch_set.filter(win=True).count()
@@ -405,7 +405,7 @@ def populate(request):
 def solo_populate(request):
 	inHeaders = request.META
 
-	django_rq.enqueue(solo_populate_background, inHeaders['HTTP_PLAYER'])
+	django_rq.enqueue(solo_populate_background, inHeaders['HTTP_NAME'])
 
 	return JsonResponse({'Creating_Games': 'Exploding Poros'})
 
