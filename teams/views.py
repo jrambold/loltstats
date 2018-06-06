@@ -116,8 +116,6 @@ def populate_background(teamname):
 
 #takes headers team
 def populate(request):
-	q = Queue(connection=conn)
-
 	inHeaders = request.META
 
 	django_rq.enqueue(populate_background, inHeaders['HTTP_TEAM'])
