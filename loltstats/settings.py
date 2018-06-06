@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 ENVIRONMENT = 'production'
 
-ALLOWED_HOSTS = ['lolstats-b.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['loltstats-b.herokuapp.com', 'localhost']
 
 
 # Application definition
