@@ -240,10 +240,7 @@ def solo_stats(request):
 	sup_wins = player.solomatch_set.filter(sup=player.account_id).filter(win=True).count()
 	sup_total = player.solomatch_set.filter(sup=player.account_id).count()
 
-	stats = {'total_games': total,
-			'wins': wins,
-			'losses': (total-wins),
-			'percent': percent(wins, total),
+	stats = {'total': {'percent': percent(wins, total), 'wins': wins, 'losses': (total-wins), 'total': total},
 			'top': {'percent': percent(top_wins, top_total), 'wins': top_wins, 'losses': (top_total-top_wins), 'total': top_total},
 			'mid': {'percent': percent(mid_wins, mid_total), 'wins': mid_wins, 'losses': (mid_total-mid_wins), 'total': mid_total},
 			'jun': {'percent': percent(jun_wins, jun_total), 'wins': jun_wins, 'losses': (jun_total-jun_wins), 'total': jun_total},
@@ -274,10 +271,7 @@ def solo(request):
 	sup_wins = player.flexmatch_set.filter(sup=player.account_id).filter(win=True).count()
 	sup_total = player.flexmatch_set.filter(sup=player.account_id).count()
 
-	stats = {'total_games': total,
-			'wins': wins,
-			'losses': (total-wins),
-			'percent': percent(wins, total),
+	stats = {'total': {'percent': percent(wins, total), 'wins': wins, 'losses': (total-wins), 'total': total},
 			'top': {'percent': percent(top_wins, top_total), 'wins': top_wins, 'losses': (top_total-top_wins), 'total': top_total},
 			'mid': {'percent': percent(mid_wins, mid_total), 'wins': mid_wins, 'losses': (mid_total-mid_wins), 'total': mid_total},
 			'jun': {'percent': percent(jun_wins, jun_total), 'wins': jun_wins, 'losses': (jun_total-jun_wins), 'total': jun_total},
