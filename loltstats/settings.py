@@ -130,9 +130,16 @@ USE_L10N = True
 
 USE_TZ = True
 
+# RQ_QUEUES = { #for local
+#     "default": {
+#         'HOST': 'localhost',
+#         'PORT': 6379,
+#         'DB': 8,
+#     },
+# }
 
 RQ_QUEUES = {
-    'default': {
+    "default": {
         'URL': os.getenv('REDISTOGO_URL', 'redis://localhost:6379/0'), # If you're on Heroku
         'DEFAULT_TIMEOUT': 2000,
     },
